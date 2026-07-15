@@ -1,9 +1,9 @@
 # HN "Who is hiring?" watcher
 
-A small, dependency-free tool that pulls engineering jobs from Hacker News's
+A small tool that pulls engineering jobs from Hacker News's
 monthly **"Who is hiring?"** thread and notifies me about *new* postings once a
 day. Built so I don't have to manually scroll the thread, the relevant roles
-come to me.
+come to me. Built for MacOS and MacOS notification system.
 
 ## What's here
 
