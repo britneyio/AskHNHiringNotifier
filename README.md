@@ -2,14 +2,14 @@
 
 A small, dependency-free tool that pulls engineering jobs from Hacker News's
 monthly **"Who is hiring?"** thread and notifies me about *new* postings once a
-day. Built so I don't have to manually scroll the thread — the relevant roles
+day. Built so I don't have to manually scroll the thread, the relevant roles
 come to me.
 
 ## What's here
 
 | File | Purpose |
 | --- | --- |
-| `hn_hiring.py` | The script. Fetches the latest "Who is hiring?" thread, filters postings, and delivers a report. Standard library only — no `pip install`. |
+| `hn_hiring.py` | The script. Fetches the latest "Who is hiring?" thread, filters postings, and delivers a report. |
 | `hn_hiring_latest.txt` | The most recent report (auto-written on each run). |
 | `.hn_hiring_seen.json` | Comment IDs already reported, so `--new-only` skips repeats. |
 | `hnhiring.out.log` / `hnhiring.err.log` | stdout/stderr from the scheduled runs. |
@@ -17,7 +17,7 @@ come to me.
 
 ## Install (do this first)
 
-A fresh clone has **no schedule** — nothing runs until you install the
+A fresh clone has **no schedule**. Nothing runs until you install the
 LaunchAgent:
 
 1. Set **`LAUNCHD_LABEL`** at the top of `hn_hiring.py` to your own reverse-DNS
@@ -45,13 +45,13 @@ Once installed:
 
 1. **launchd** runs the job every day at your chosen time. If the Mac is asleep
    then, launchd runs it once, automatically, on the next wake (built-in
-   `StartCalendarInterval` catch-up) — so you still get it the first time you
+   `StartCalendarInterval` catch-up) so you still get it the first time you
    open your laptop that day. It fires **at most once per day** either way.
 2. It runs `hn_hiring.py` with `--days 1 --new-only --notify --quiet`: only
    postings from the last day, only ones not seen before, delivered as a macOS
    desktop notification, no console noise.
 
-**Changing the run time:** don't hand-edit the plist — use the script:
+**Changing the run time:** don't hand-edit the plist:
 
 ```bash
 python3 hn_hiring.py --set-schedule 07:30   # 24-hour HH:MM; rewrites the plist and reloads
@@ -62,24 +62,23 @@ new time takes effect immediately.
 
 ## Why it's built this way
 
-- **No dependencies** — the script uses only the Python standard library, so it
-  keeps working without a maintained virtualenv.
-- **Follows the thread automatically** — it reads the `whoishiring` account's
+- **No dependencies**: the script uses only the Python standard library
+- **Follows the thread automatically**: it reads the `whoishiring` account's
   submissions and picks the newest "Who is hiring?" thread, so it rolls over to
   next month's thread on its own.
-- **Filters to what's relevant** — by default it keeps **engineer roles** (not
+- **Filters to what's relevant**: by default it keeps **engineer roles** (not
   principal/staff level) that are **US-based, global-remote, or unscoped
   remote**, and splits the report into Remote vs. US-onsite sections. A remote
   role scoped to a non-US region (e.g. "Remote (EU)") is dropped.
-- **Optional visa filter** (`--visa`, off by default) — drops postings that
+- **Optional visa filter** (`--visa`, off by default): drops postings that
   *explicitly* refuse sponsorship ("No visa sponsorship", "U.S. citizens only",
   "work authorization required", "not able to sponsor", etc.). It's an
   exclusion, not a requirement: postings that affirmatively sponsor **or** that
   say nothing about visas are kept, since silence on HN usually isn't a "no."
   The patterns are heuristics drawn from real thread wording.
-- **Only surfaces new postings** — dedup via `.hn_hiring_seen.json` means the
+- **Only surfaces new postings**: dedup via `.hn_hiring_seen.json` means the
   daily notification is signal, not the same list every morning.
-- **No wrapper, no polling** — a single daily `StartCalendarInterval` fires once
+- **No wrapper, no polling**: a single daily `StartCalendarInterval` fires once
   a day (or once on wake if 08:00 was missed), so nothing extra runs in the
   background. The tradeoff: if that one run fails (e.g. no wifi at that moment),
   the postings are picked up on the next day's run rather than retried the same
